@@ -2,7 +2,7 @@
   "versionLabel": "1.0.0",
   "agentInfo": {
     "languageCode": "en-US",
-    "projectId": "hello",
+    "projectId": "<your-app>",
     "voiceName": "male_1"
   },
   "actions": [
@@ -21,7 +21,7 @@
         }
       ],
       "httpExecution": {
-        "url": "YOUR_ENDPOINT_URL"
+        "url": "https://<your-https-url>"
       }
     }
   ]

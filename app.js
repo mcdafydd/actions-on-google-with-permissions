@@ -29,15 +29,29 @@ app.use(bodyParser.json({type: 'application/json'}));
 
 app.post('/', function (request, response) {
   console.log('handle post');
+	const REQUEST_PERMISSION_ACTION = 'request_permission';
   const assistant = new ActionsSdkAssistant({request: request, response: response});
 
   function mainIntent (assistant) {
     console.log('mainIntent');
-    let inputPrompt = assistant.buildInputPrompt(true, '<speak>Hi! <break time="1"/> ' +
+	  var name = '';
+	  if (assistant.isPermissionGranted()) {
+		  name = assistant.getUserName().displayName;
+	  }
+
+    let inputPrompt = assistant.buildInputPrompt(true, '<speak>Hi! ' + name + '<break time="1"/> ' +
           'I can read out an ordinal like ' +
           '<say-as interpret-as="ordinal">123</say-as>. Say a number.</speak>');
     assistant.ask(inputPrompt, [{'intent': RAW_INTENT}]);
   }
+
+	function requestPermission(assistant) {
+		let permissions = [
+			assistant.SupportedPermissions.NAME
+		];
+
+		assistant.askForPermissions('To address you by name', permissions, assistant.StandardIntents.PERMISSION);
+	}
 
   function rawInput (assistant) {
     console.log('rawInput');
@@ -50,8 +64,9 @@ app.post('/', function (request, response) {
   }
 
   let actionMap = new Map();
-  actionMap.set(assistant.StandardIntents.MAIN, mainIntent);
+  actionMap.set(assistant.StandardIntents.MAIN, requestPermission);
   actionMap.set(RAW_INTENT, rawInput);
+	actionMap.set(assistant.StandardIntents.PERMISSION, mainIntent);
 
   assistant.handleRequest(actionMap);
 });
